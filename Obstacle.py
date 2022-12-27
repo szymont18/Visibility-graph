@@ -11,9 +11,9 @@ def det(a, b, c):
 def orient(p1, p2, p3):
     valo = np.linalg.det([[p1.x, p1.y, 1], [p2.x, p2.y, 1], [p3.x, p3.y, 1]])
     print(p1.x, p1.y, p2.ind, "   ", p2.x, p2.y, p2.ind, "   ", p3.x, p3.y, p3.ind, "   ", round(valo, 2))
-    if valo > 0:
+    if valo > EPS:
         return 1
-    elif valo < 0:
+    elif valo < EPS:
         return -1
     else:
         return 0
