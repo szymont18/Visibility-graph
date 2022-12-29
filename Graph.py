@@ -24,14 +24,14 @@ class Graph:
     def addNode(self, n: Node):
         if n not in self.nodeList:
             self.nodeList.append(n)
-            self.node_coord.append((n.point[0], n.point[1]))
+            self.node_coord.append((n.point.x, n.point.y))
 
     def addEdge(self, n1: int, n2: int, weight: float):
         if (n1, n2) not in self.edges and (n2, n1) not in self.edges:
             self.edges[(n1, n2)] = weight
 
-            self.edges_coord.append([(self.nodeList[n1].point[0], self.nodeList[n1].point[1]),
-                                     (self.nodeList[n2].point[0], self.nodeList[n2].point[1])])
+            self.edges_coord.append([(self.nodeList[n1].point.x, self.nodeList[n1].point.y),
+                                     (self.nodeList[n2].point.x, self.nodeList[n2].point.y)])
             # Adding edge in Node class
             self.nodeList[n1].add_edge(n2, weight)
             self.nodeList[n2].add_edge(n1, weight)

@@ -71,7 +71,9 @@ class _Button_callback(object):
             self.adding_lines = False
             self.new_rect()
 
-
+    def new_rect(self):
+        self.added_rects.append(LinesCollection([]))
+        self.rect_points = []
 
     # Metoda odpowiedzialna za właściwą logikę rysowania nowych elementów. W
     # zależności od włączonego trybu dodaje nowe punkty, początek, koniec odcinka
@@ -79,7 +81,6 @@ class _Button_callback(object):
     # czy dany punkt jest domykający dla danego wielokąta. Polega ona na tym, że
     # sprawdzamy czy odległość nowego punktu od początkowego jest większa od
     # średniej długości zakresu pomnożonej razy parametr TOLERANCE.
-
     def on_click(self, event):
         if event.inaxes != self.ax:
             return
@@ -110,7 +111,6 @@ class _Button_callback(object):
                     self.added_rects[-1].add([self.rect_points[-1], new_point])
                     self.rect_points.append(new_point)
                 self.draw(autoscaling=False)
-
 
     # Metoda odpowiedzialna za narysowanie całego wykresu. Warto zauważyć,
     # że zaczyna się ona od wyczyszczenia jego wcześniejszego stanu. Istnieje w

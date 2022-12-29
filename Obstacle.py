@@ -10,7 +10,7 @@ def det(a, b, c):
 
 def orient(p1, p2, p3):
     valo = np.linalg.det([[p1.x, p1.y, 1], [p2.x, p2.y, 1], [p3.x, p3.y, 1]])
-    print(p1.x, p1.y, p2.ind, "   ", p2.x, p2.y, p2.ind, "   ", p3.x, p3.y, p3.ind, "   ", round(valo, 2))
+    # print(p1.x, p1.y, p2.ind, "   ", p2.x, p2.y, p2.ind, "   ", p3.x, p3.y, p3.ind, "   ", round(valo, 2))
     if valo > EPS:
         return 1
     elif valo < EPS:
@@ -28,6 +28,7 @@ def crossProd(l1, l2):
 
 class Point:
     origin = None
+    max_X = -float('inf')
 
     def __init__(self, p, pointIndex,
                  obstacleIndex):
@@ -37,8 +38,13 @@ class Point:
         self.ind = pointIndex
         self.oind = obstacleIndex
 
+        Point.max_X = max(Point.max_X, math.ceil(self.x + 0.1 * self.x))  # 10 % longer Broom ( int )
+
     def updateOrigin(og):
         Point.origin = og
+
+    def distance(self, other):
+        return math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2)
 
     def distSqr(self):
         return (self.x - Point.origin.x) ** 2 + (self.y - Point.origin.y) ** 2
@@ -172,7 +178,7 @@ class Obstacle:
             if line.p2 == i.p1 or line.p2 == i.p2:
                 continue
             if line.intersectsLine(i):
-                if line.p2.x > 10:
+                if line.p2.x == Point.max_X:
                     line.sweepDistance = line.xIntercept
                 rettab.append(i)
         return rettab

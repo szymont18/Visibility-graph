@@ -12,7 +12,8 @@ def dijkstra(G: Graph, s: int, t: int, visualise_flag: bool = True):
     visited = [False for _ in range(V)]
     parent = [None for _ in range(V)]
     PQ = queue.PriorityQueue()
-    visualiser = DijkstraVisualiser(G.node_coord, G.edges_coord)
+
+    visualiser = DijkstraVisualiser(G.node_coord, G.edges_coord, t)
 
     PQ.put((0, s))
     visited[s] = True
@@ -23,10 +24,14 @@ def dijkstra(G: Graph, s: int, t: int, visualise_flag: bool = True):
     while not PQ.empty():
         d, v = PQ.get()
         visited[v] = True
-        if v == t: return distance[t], parent, visualiser.get_scenes()
 
         if visualise_flag:
             visualiser.create_scene(v, v)
+
+        if v == t:
+            if visualise_flag:
+                visualiser.create_end_scene(parent, s, t)
+            return distance[t], parent, visualiser.get_scenes()
 
         for u, weight in G.nodeList[v].edges.items():
 
@@ -41,39 +46,5 @@ def dijkstra(G: Graph, s: int, t: int, visualise_flag: bool = True):
 
         if visualise_flag: visualiser.process_point(v)
 
-    return distance[t], parent, visualiser.get_scenes
+    return distance[t], parent, visualiser.get_scenes()
 
-'''
-G = Graph([(0, 0), (1, 1), (6, 1), (6, -1), (1, -1), (10, 5)])
-G.addEdge(0, 1, 1)
-G.addEdge(0, 3, 5)
-G.addEdge(0, 4, 2)
-G.addEdge(1, 2, 7)
-G.addEdge(2, 5, 10)
-G.addEdge(3, 4, 2)
-G.addEdge(3, 5, 2)
-s = 0
-t = 5
-d, p, scenes = dijkstra(G, 0, 5)
-print(d)
-plot = Plot(scenes=scenes)
-plot.draw()
-'''
-
-######################################################################
-
-'''
-G = Graph([(0, 5), (1, 7), (3, -2), (4, 3), (10, 6)])
-G.addEdge(0,1,5)
-G.addEdge(0,2,5)
-G.addEdge(0,3,1)
-G.addEdge(1,2,6)
-G.addEdge(1,4,7)
-G.addEdge(2,4,4)
-G.addEdge(3,4,1)
-s = 0
-t = 4
-d,p,scenes = dijkstra(G,s,t)
-plot = Plot(scenes=scenes)
-plot.draw()
-'''
