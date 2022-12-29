@@ -15,6 +15,9 @@ def visible(w: Point, pw: Line, obstacles: list[Obstacle], i: int, w_list: list[
 
     w_obstacle = obstacles[w.oind]
 
+    if w.oind == pw.p1.oind and not w_obstacle.same_line(w, pw.p1): # Diagonal Check
+        return False
+
     if len(w_obstacle.getIntersectingEdges(pw)) != 0:  # Intersect the interior of the w_obstacle
         return False
 
@@ -39,8 +42,9 @@ def visibleVertices(point: Point, obstacles: list[Obstacle], graph: Graph, verti
     if point.ind != 0:
         w_list.remove(vertices[0])
 
-    if point.ind != vertices[-1].ind:
-        w_list.remove(vertices[-1])
+    # Sometimes there are edge between start and end points
+    # if point.ind != vertices[-1].ind:
+    #     w_list.remove(vertices[-1])
 
     w_list.remove(point)
     Point.updateOrigin(point)
@@ -61,6 +65,8 @@ def visibleVertices(point: Point, obstacles: list[Obstacle], graph: Graph, verti
         if visible(w_list[i], half_line, obstacles, i, w_list, BroomT, visible_found):
             visible_found[i] = True
             graph.addEdge(point.ind, w_list[i].ind, point.distance(w_list[i]))  #Adding edges to the graph
+
+        if point.ind != vertices[-1].ind: continue
 
         w_obstacle = obstacles[w_list[i].oind]
         temp = w_obstacle.getIncidentLines(w_list[i])

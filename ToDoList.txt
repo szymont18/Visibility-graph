@@ -1,5 +1,9 @@
-* Punkt startowy nie łączy się z punktem końcowym nawet jeżeli nie ma pomiędzy nimi przeszkody ( czasami najkrótsza droga to odcinek między tymi punktami )
+* Punkt startowy nie łączy się z punktem końcowym nawet jeżeli nie ma pomiędzy nimi przeszkody
+    ( czasami najkrótsza droga to odcinek między tymi punktami ) --- ZROBIONE
 * Sortowanie według kątów ( powinno być pewnie według wyznaczników )
-* Rysują się przekątne
+* Rysują się przekątne --- ZROBIONE
 * Czy potrzebne jest dodawanie sweepDistance do struktury BroomT
 * Czy poprawnie działa sweeDistance ( kolejność w BroomT )
+* Wizualizacja tworzenia grafu
+* Dokumentacja
+* Prezentacja

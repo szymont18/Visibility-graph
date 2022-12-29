@@ -182,3 +182,9 @@ class Obstacle:
                     line.sweepDistance = line.xIntercept
                 rettab.append(i)
         return rettab
+
+    def same_line(self, point1: Point, point2: Point):  # Check if the point1 and point2 are lying on the same line
+        if (point1.ind - self.minVertex + 1) % (len(self.points)) == (point2.ind - self.minVertex) or \
+                (point2.ind - self.minVertex + 1) % (len(self.points)) == (point1.ind - self.minVertex): return True
+
+        return False

@@ -52,5 +52,12 @@ def getAddedElements(plot1):
             pointCounter = res[2]
             obstList.append(res[0])
             pointList += res[1]
-    pointList.append(Point(end, pointCounter + 1, -2))
+
+    end_obstacle = Obstacle(obstacleCounter)
+    end_point = Point(end, pointCounter + 1, -2)
+
+    end_obstacle.addPoint(end_point)
+    pointList.append(end_point)
+    obstList.append(end_obstacle)
+
     return pointList, obstList
