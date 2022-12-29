@@ -10,7 +10,9 @@ from sortedcontainers import SortedList
 import bisect
 
 
-def visible(w, pw, obstacles, i, w_list, BroomT, visible_list):
+def visible(w: Point, pw: Line, obstacles: list[Obstacle], i: int, w_list: list[Point], BroomT: SortedList,
+            visible_list: list[bool]):
+
     w_obstacle = obstacles[w.oind]
 
     if len(w_obstacle.getIntersectingEdges(pw)) != 0:  # Intersect the interior of the w_obstacle
@@ -53,7 +55,6 @@ def visibleVertices(point: Point, obstacles: list[Obstacle], graph: Graph, verti
 
     visible_found = [False for _ in range(len(w_list))]
 
-
     for i in range(len(w_list)):
         half_line = Line(point, w_list[i])
 
@@ -69,7 +70,7 @@ def visibleVertices(point: Point, obstacles: list[Obstacle], graph: Graph, verti
             if edge.halfLineOrientation(half_line) == -1:  # lie on the clockwise side
                 edge.updateSweepLen(x)
                 BroomT.add((edge.sweepDistance, edge))
-            else:  # lie on the COUNTERcloskwise side
+            else:  # lie on the COUNTERclockwise side
                 findAndRemove(BroomT, (edge.sweepDistance, edge))
                 # BroomT.remove((edge.sweepDistance, edge))
 

@@ -56,3 +56,5 @@ class VisibilityVisualiser:
         self.points = points
         self.start_point = start_point
         self.end_point = end_point
+
+
