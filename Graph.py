@@ -21,12 +21,12 @@ class Graph:
         self.edges = {}  # dict of edges
         self.edges_coord = []  # coordinates of each edge. Example [(1,2), (2,3)] - edge between point (1, 2) and (2, 3)
 
-    def addNode(self, n: Node):
+    def add_node(self, n: Node):
         if n not in self.nodeList:
             self.nodeList.append(n)
             self.node_coord.append((n.point.x, n.point.y))
 
-    def addEdge(self, n1: int, n2: int, weight: float):
+    def add_edge(self, n1: int, n2: int, weight: float):
         if (n1, n2) not in self.edges and (n2, n1) not in self.edges:
             self.edges[(n1, n2)] = weight
 

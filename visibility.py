@@ -21,13 +21,13 @@ def visible(w: Point, pw: Line, obstacles: list[Obstacle], i: int, w_list: list[
             return False
         else: return True
 
-    if len(w_obstacle.getIntersectingEdges(pw)) != 0:  # Intersect the interior of the w_obstacle
+    if len(w_obstacle.get_intersecting_edges(pw)) != 0:  # Intersect the interior of the w_obstacle
         return False
 
     elif i == 0 or orient(pw.p1, pw.p2, w_list[i - 1]) != 0:
         # w is first vertex in sorted array or w(i-1) not on the segment pw
 
-        if len(BroomT) > 0 and pw.intersectsLine(BroomT[0][1]):  # e exist and pw intersect e
+        if len(BroomT) > 0 and pw.intersects_line(BroomT[0][1]):  # e exist and pw intersect e
             return False
         else:
             return True
@@ -38,8 +38,8 @@ def visible(w: Point, pw: Line, obstacles: list[Obstacle], i: int, w_list: list[
         return True
 
 
-def visibleVertices(point: Point, obstacles: list[Obstacle], graph: Graph, vertices: list[Point],
-                    visualiser: VisibilityVisualiser):
+def visible_vertices(point: Point, obstacles: list[Obstacle], graph: Graph, vertices: list[Point],
+                     visualiser: VisibilityVisualiser):
     BroomT = SortedList()
     w_list = copy.deepcopy(vertices)
 
@@ -51,7 +51,7 @@ def visibleVertices(point: Point, obstacles: list[Obstacle], graph: Graph, verti
     #     w_list.remove(vertices[-1])
 
     w_list.remove(point)
-    Point.updateOrigin(point)
+    Point.update_origin(point)
 
     w_list = sorted(w_list)  # Sorting with angle, should be with dets
     half_line = Line(point, Point((Point.max_X, point.y), -3, -3))
@@ -60,7 +60,7 @@ def visibleVertices(point: Point, obstacles: list[Obstacle], graph: Graph, verti
         visualiser.create_broom_scene(half_line)
 
     for obstacle in obstacles:
-        edges = obstacle.getIntersectingEdges(half_line)
+        edges = obstacle.get_intersecting_edges(half_line)
 
         for edge in edges:
             BroomT.add((edge.sweepDistance, edge))
@@ -82,7 +82,7 @@ def visibleVertices(point: Point, obstacles: list[Obstacle], graph: Graph, verti
                 visualiser.change_broom_scene(half_line, lines, True)
 
             visible_found[i] = True
-            graph.addEdge(point.ind, w_list[i].ind, point.distance(w_list[i]))  #Adding edges to the graph
+            graph.add_edge(point.ind, w_list[i].ind, point.distance(w_list[i]))  #Adding edges to the graph
 
 
         elif visualiser is not None:
@@ -93,21 +93,22 @@ def visibleVertices(point: Point, obstacles: list[Obstacle], graph: Graph, verti
         if w_list[i].ind == vertices[-1].ind: continue
 
         w_obstacle = obstacles[w_list[i].oind]
-        temp = w_obstacle.getIncidentLines(w_list[i])
+        temp = w_obstacle.get_incident_lines(w_list[i])
 
         for edge in temp:
-            x = half_line.getLen()
-            if edge.halfLineOrientation(half_line) == -1:  # lie on the clockwise side
-                edge.updateSweepLen(x)
+            x = half_line.get_len()
+            if edge.half_line_orientation(half_line) == -1:  # lie on the clockwise side
+                edge.update_sweep_len(x)
                 BroomT.add((edge.sweepDistance, edge))
             else:  # lie on the COUNTERclockwise side
-                findAndRemove(BroomT, (edge.sweepDistance, edge))
+                find_and_remove(BroomT, (edge.sweepDistance, edge))
                 # BroomT.remove((edge.sweepDistance, edge))
 
     if visualiser is not None:
         visualiser.graph_connection_scene(point)
 
-def computeGraph(points: list[Point], obstacles: list[Obstacle], vis_flag = True):
+
+def compute_graph(points: list[Point], obstacles: list[Obstacle], vis_flag = True):
     graph = Graph()
 
     visualiser = None
@@ -121,10 +122,10 @@ def computeGraph(points: list[Point], obstacles: list[Obstacle], vis_flag = True
     for k in range(len(points)):
         i = points[k]
         node = Node(i.ind, i)
-        graph.addNode(node)
+        graph.add_node(node)
 
     for i in points:
-        visibleVertices(i, obstacles, graph, points, visualiser)
+        visible_vertices(i, obstacles, graph, points, visualiser)
 
     scenes = []
     if vis_flag:
@@ -133,7 +134,7 @@ def computeGraph(points: list[Point], obstacles: list[Obstacle], vis_flag = True
     return graph, scenes
 
 
-def findAndRemove(T, val):  # TODO: Remove and implement a binary tree
+def find_and_remove(T, val):  # TODO: Remove and implement a binary tree
     key = val[0]
     ed = val[1]
 

@@ -4,10 +4,6 @@ import numpy as np
 EPS = 10 ** (-10)
 
 
-def det(a, b, c):
-    return a.x * b.y + a.y * c.x + b.x * c.y - c.x * b.y - b.x * a.y - a.x * c.y
-
-
 def orient(p1, p2, p3):
     valo = np.linalg.det([[p1.x, p1.y, 1], [p2.x, p2.y, 1], [p3.x, p3.y, 1]])
     # print(p1.x, p1.y, p2.ind, "   ", p2.x, p2.y, p2.ind, "   ", p3.x, p3.y, p3.ind, "   ", round(valo, 2))
@@ -19,7 +15,7 @@ def orient(p1, p2, p3):
         return 0
 
 
-def crossProd(l1, l2):
+def cross_prod(l1, l2):
     v1 = (l1.p1.x - l1.p2.x, l1.p1.y - l1.p2.y)
     v2 = (l2.p1.x - l2.p2.x, l2.p1.y - l2.p2.y)
 
@@ -30,8 +26,8 @@ class Point:
     origin = None
     max_X = -float('inf')
 
-    def __init__(self, p, pointIndex,
-                 obstacleIndex):
+    def __init__(self, p: (float, float), pointIndex: int,
+                 obstacleIndex:int):
         self.x = p[0]
         self.y = p[1]
 
@@ -40,13 +36,13 @@ class Point:
 
         Point.max_X = max(Point.max_X, self.x)  # 10 % longer Broom ( int )
 
-    def updateOrigin(og):
+    def update_origin(og):
         Point.origin = og
 
     def distance(self, other):
         return math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2)
 
-    def distSqr(self):
+    def dist_sqr(self):
         return (self.x - Point.origin.x) ** 2 + (self.y - Point.origin.y) ** 2
 
     def findAngle(self):
@@ -72,7 +68,7 @@ class Point:
         elif angle1 < angle2:
             return True
         else:
-            return self.distSqr() < other.distSqr()
+            return self.dist_sqr() < other.dist_sqr()
 
 
 class Line:
@@ -97,17 +93,17 @@ class Line:
         self.seenCount = 0
         self.sweepDistance = 0
 
-    def halfLineOrientation(self, halfLine):
+    def half_line_orientation(self, halfLine):
         hp2 = halfLine.p2
 
         if self.p1 == hp2:
-            t = crossProd(halfLine, self)
+            t = cross_prod(halfLine, self)
             if t > 0:
                 return 1  # cw
             else:
                 return -1  # ccw
         else:
-            t = crossProd(halfLine, Line(self.p2, self.p1))
+            t = cross_prod(halfLine, Line(self.p2, self.p1))
             if t > 0:
                 return 1  # cw
             else:
@@ -116,7 +112,7 @@ class Line:
     def getLineValAtX(self, x):
         return self.m * x + self.b
 
-    def intersectsLine(self, other):
+    def intersects_line(self, other):
         p1 = self.p1
         p2 = self.p2
 
@@ -142,10 +138,10 @@ class Line:
     def __gt__(self, other):
         return self.sweepDistance > other.sweepDistance
 
-    def getLen(self):
-        return (self.p2.x - self.p1.x) ** 2 + (self.p2.y - self.p1.y) ** 2
+    def get_len(self):
+        return math.sqrt((self.p2.x - self.p1.x) ** 2 + (self.p2.y - self.p1.y) ** 2)
 
-    def updateSweepLen(self, new):
+    def update_sweep_len(self, new):
         self.sweepDistance = new
 
 
@@ -157,21 +153,21 @@ class Obstacle:
         self.pointIndices = set()
         self.minVertex = float('inf')
 
-    def addPoint(self, p):
+    def add_point(self, p):
         self.points.append(p)
         self.pointIndices.add(p.ind)
         if p.ind < self.minVertex:
             self.minVertex = p.ind
 
-    def addEdge(self, e):
+    def add_edge(self, e):
         self.edges.append(e)
 
-    def getIncidentLines(self, vertex):
+    def get_incident_lines(self, vertex):
         retind = vertex.ind - self.minVertex
 
         return [self.edges[retind], self.edges[retind - 1]]
 
-    def getIntersectingEdges(self, line):
+    def get_intersecting_edges(self, line):
         rettab = []
 
         for i in self.edges:
@@ -179,7 +175,7 @@ class Obstacle:
                 continue
             if line.p2 == i.p1 or line.p2 == i.p2:
                 continue
-            if line.intersectsLine(i):
+            if line.intersects_line(i):
                 if line.p2.x == Point.max_X:
                     line.sweepDistance = line.xIntercept
                 rettab.append(i)
