@@ -4,6 +4,6 @@
 * Rysują się przekątne --- ZROBIONE
 * Czy potrzebne jest dodawanie sweepDistance do struktury BroomT
 * Czy poprawnie działa sweeDistance ( kolejność w BroomT )
-* Wizualizacja tworzenia grafu
+* Wizualizacja tworzenia grafu --- ZROBIONE
 * Dokumentacja
 * Prezentacja

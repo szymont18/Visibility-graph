@@ -38,7 +38,7 @@ class Point:
         self.ind = pointIndex
         self.oind = obstacleIndex
 
-        Point.max_X = max(Point.max_X, math.ceil(self.x + 0.1 * self.x))  # 10 % longer Broom ( int )
+        Point.max_X = max(Point.max_X, self.x)  # 10 % longer Broom ( int )
 
     def updateOrigin(og):
         Point.origin = og
@@ -175,6 +175,8 @@ class Obstacle:
         rettab = []
 
         for i in self.edges:
+            if line.p1 == i.p1 or line.p1 == i.p2:
+                continue
             if line.p2 == i.p1 or line.p2 == i.p2:
                 continue
             if line.intersectsLine(i):

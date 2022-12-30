@@ -1,5 +1,6 @@
 from graphicTool import *
 from Graph import *
+from Obstacle import *
 import copy
 
 
@@ -50,11 +51,88 @@ class DijkstraVisualiser:
 
 class VisibilityVisualiser:
 
-    def __init__(self, lines: list[[(float, float), (float, float)]], points: list[(float, float)],
-                 start_point: (int, int), end_point: (int, int)):
-        self.lines = lines
-        self.points = points
-        self.start_point = start_point
-        self.end_point = end_point
+    def __init__(self, lines: list[Line], points: list[Point],
+                 start_point: Point, end_point: Point, x:float):
+        self.lines = [[(line.p1.x, line.p1.y), (line.p2.x, line.p2.y)] for line in lines]
+
+        self.points = [(point.x, point.y) for point in points]
+        self.start_point = (start_point.x, start_point.y)
+        self.end_point = (end_point.x, end_point.y)
+        self.broom_X = x
+        self.scenes = []
+
+    def create_start_scene(self):
+        self.scenes.append(Scene([PointsCollection(self.points),
+                                  PointsCollection([self.start_point], color='purple'),
+                                  PointsCollection([self.end_point], color='purple')],
+                                 [LinesCollection(self.lines)]))
+
+    def get_scenes(self):
+        return self.scenes
+
+    def create_broom_scene(self, broom: Line):
+        first_point = (broom.p1.x, broom.p1.y)
+        second_point = (self.broom_X, broom.p2.y)
+        broom_line = [[first_point, second_point]]
+
+        self.broom_line = broom_line
+        self.visible_vert = []
+
+        self.scenes.append(Scene([PointsCollection(self.points, color='grey'),
+                                  PointsCollection([first_point], color='orange')],
+                                 [LinesCollection(self.lines, color='grey'),
+                                  LinesCollection(broom_line, color='red')]))
+
+    def intersecting_scene(self, intersecting_lines: list[Line]):
+        lines = [[(line.p1.x, line.p1.y), (line.p2.x, line.p2.y)] for line in intersecting_lines]
+        self.scenes.append(Scene([PointsCollection(self.points, color='grey'),
+                                  PointsCollection([(self.broom_line[0][0][0], self.broom_line[0][0][1])], color='orange')],
+                                 [LinesCollection(self.lines, color='grey'),
+                                  LinesCollection(self.broom_line, color='red'),
+                                  LinesCollection(lines)]))
+
+    def change_broom_scene(self, broom: Line, lines: list[Line], visible_flag: bool):
+        first_point = (broom.p1.x, broom.p1.y)
+        second_point = (broom.p2.x, broom.p2.y)
+        broom_line = [[first_point, second_point]]
+        lines = [[(line.p1.x, line.p1.y), (line.p2.x, line.p2.y)] for line in lines]
+
+        self.broom_line = broom_line
+
+        self.scenes.append(Scene([PointsCollection(self.points, color='grey'),
+                                  PointsCollection([first_point],color='orange'),
+                                  PointsCollection([second_point], color='lime'),
+                                  PointsCollection(self.visible_vert.copy(), color='green')],
+                                 [LinesCollection(self.lines, color='grey'),
+                                  LinesCollection(self.broom_line, color='red'),
+                                  LinesCollection(lines)]))
+
+        if visible_flag:
+            self.visible_vert.append(second_point)
+            self.scenes.append(Scene([PointsCollection(self.points, color='grey'),
+                                      PointsCollection([first_point], color='orange'),
+                                      PointsCollection([second_point], color='lime'),
+                                      PointsCollection(self.visible_vert.copy(), color='green')],
+                                     [LinesCollection(self.lines, color='grey'),
+                                      LinesCollection(self.broom_line, color='red'),
+                                      LinesCollection(lines)]))
+
+    def graph_connection_scene(self, point: Point):
+        edges = [[(self.visible_vert[i][0],self.visible_vert[i][1]),
+                  (point.x, point.y)] for i in range(len(self.visible_vert))]
+
+        self.scenes.append(Scene([PointsCollection(self.points, color='grey'),
+                                  PointsCollection([(point.x, point.y)], color='orange'),
+                                  PointsCollection(self.visible_vert.copy(), color='green')],
+                                 [LinesCollection(self.lines, color='grey'),
+                                  LinesCollection(edges, color='green')]))
+
+
+
+
+
+
+
+
 
 

@@ -15,7 +15,9 @@ start_point = points[0]
 end_point = points[-1]
 
 # Create Visibility Graph
-visible_graph = computeGraph(points, obstacles)
+visible_graph, scenes_g = computeGraph(points, obstacles)
+graph_plot = Plot(scenes=scenes_g)
+graph_plot.draw()
 
 # Find the shortest path
 distance, parent, scenes = dijkstra(visible_graph, 0, len(points) - 1, True)

@@ -4,6 +4,7 @@ from Obstacle import *
 from util import *
 import copy
 from sortedcontainers import SortedList
+from Visualiser import *
 
 import copy
 from sortedcontainers import SortedList
@@ -15,8 +16,10 @@ def visible(w: Point, pw: Line, obstacles: list[Obstacle], i: int, w_list: list[
 
     w_obstacle = obstacles[w.oind]
 
-    if w.oind == pw.p1.oind and not w_obstacle.same_line(w, pw.p1): # Diagonal Check
-        return False
+    if w.oind == pw.p1.oind:
+        if not w_obstacle.same_line(w, pw.p1): # Diagonal Check
+            return False
+        else: return True
 
     if len(w_obstacle.getIntersectingEdges(pw)) != 0:  # Intersect the interior of the w_obstacle
         return False
@@ -35,7 +38,8 @@ def visible(w: Point, pw: Line, obstacles: list[Obstacle], i: int, w_list: list[
         return True
 
 
-def visibleVertices(point: Point, obstacles: list[Obstacle], graph: Graph, vertices: list[Point]):
+def visibleVertices(point: Point, obstacles: list[Obstacle], graph: Graph, vertices: list[Point],
+                    visualiser: VisibilityVisualiser):
     BroomT = SortedList()
     w_list = copy.deepcopy(vertices)
 
@@ -51,11 +55,20 @@ def visibleVertices(point: Point, obstacles: list[Obstacle], graph: Graph, verti
 
     w_list = sorted(w_list)  # Sorting with angle, should be with dets
     half_line = Line(point, Point((Point.max_X, point.y), -3, -3))
+
+    if visualiser is not None:
+        visualiser.create_broom_scene(half_line)
+
     for obstacle in obstacles:
         edges = obstacle.getIntersectingEdges(half_line)
 
         for edge in edges:
             BroomT.add((edge.sweepDistance, edge))
+
+    if visualiser is not None:
+        lines = [it[1] for it in BroomT]
+        visualiser.intersecting_scene(lines)
+
 
     visible_found = [False for _ in range(len(w_list))]
 
@@ -63,10 +76,21 @@ def visibleVertices(point: Point, obstacles: list[Obstacle], graph: Graph, verti
         half_line = Line(point, w_list[i])
 
         if visible(w_list[i], half_line, obstacles, i, w_list, BroomT, visible_found):
+
+            if visualiser is not None:
+                lines = [it[1] for it in BroomT]
+                visualiser.change_broom_scene(half_line, lines, True)
+
             visible_found[i] = True
             graph.addEdge(point.ind, w_list[i].ind, point.distance(w_list[i]))  #Adding edges to the graph
 
-        if point.ind != vertices[-1].ind: continue
+
+        elif visualiser is not None:
+            lines = [it[1] for it in BroomT]
+            visualiser.change_broom_scene(half_line, lines, False)
+
+
+        if w_list[i].ind == vertices[-1].ind: continue
 
         w_obstacle = obstacles[w_list[i].oind]
         temp = w_obstacle.getIncidentLines(w_list[i])
@@ -80,9 +104,19 @@ def visibleVertices(point: Point, obstacles: list[Obstacle], graph: Graph, verti
                 findAndRemove(BroomT, (edge.sweepDistance, edge))
                 # BroomT.remove((edge.sweepDistance, edge))
 
+    if visualiser is not None:
+        visualiser.graph_connection_scene(point)
 
-def computeGraph(points: list[Point], obstacles: list[Obstacle]):
+def computeGraph(points: list[Point], obstacles: list[Obstacle], vis_flag = True):
     graph = Graph()
+
+    visualiser = None
+
+    if vis_flag:
+        lines = [line for obstacle in obstacles for line in obstacle.edges]  # Do not tests
+        visualiser = VisibilityVisualiser(lines, points, points[0], points[-1], Point.max_X)
+
+        visualiser.create_start_scene()
 
     for k in range(len(points)):
         i = points[k]
@@ -90,9 +124,13 @@ def computeGraph(points: list[Point], obstacles: list[Obstacle]):
         graph.addNode(node)
 
     for i in points:
-        visibleVertices(i, obstacles, graph, points)
+        visibleVertices(i, obstacles, graph, points, visualiser)
 
-    return graph
+    scenes = []
+    if vis_flag:
+        scenes = visualiser.get_scenes()
+
+    return graph, scenes
 
 
 def findAndRemove(T, val):  # TODO: Remove and implement a binary tree
