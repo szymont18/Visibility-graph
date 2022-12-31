@@ -31,17 +31,25 @@ def get_obstacle_from_linesCollection(lcol: LinesCollection, pointcount: int, ob
     return newobs, pts, pointcount
 
 
-def get_added_elements(plot1: Plot):
+def get_added_elements(plot1: Plot, lines=None, points=None):
     obstList = []
 
-    start_end = plot1.get_added_points()
+    if points is None:
+        start_end = plot1.get_added_points()
 
-    start = start_end[0].points[0]
-    end = start_end[0].points[1]
+        start = start_end[0].points[0]
+        end = start_end[0].points[1]
+
+    else:
+        start, end = points[0], points[1]
 
     pointList = [Point(start, 0, -1)]
 
-    plotLines = plot1.get_added_figure()
+    if lines is None:
+        plotLines = plot1.get_added_figure()
+
+    else:
+        plotLines = lines
     pointCounter = 0
     obstacleCounter = 0
 
