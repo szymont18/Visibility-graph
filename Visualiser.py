@@ -60,6 +60,7 @@ class VisibilityVisualiser:
         self.end_point = (end_point.x, end_point.y)
         self.broom_X = x
         self.scenes = []
+        self.visible_vert = [[] for i in range(len(points) + 2)]
 
     def create_start_scene(self):
         self.scenes.append(Scene([PointsCollection(self.points),
@@ -76,7 +77,6 @@ class VisibilityVisualiser:
         broom_line = [[first_point, second_point]]
 
         self.broom_line = broom_line
-        self.visible_vert = []
 
         self.scenes.append(Scene([PointsCollection(self.points, color='grey'),
                                   PointsCollection([first_point], color='orange')],
@@ -102,28 +102,48 @@ class VisibilityVisualiser:
         self.scenes.append(Scene([PointsCollection(self.points, color='grey'),
                                   PointsCollection([first_point],color='orange'),
                                   PointsCollection([second_point], color='lime'),
-                                  PointsCollection(self.visible_vert.copy(), color='green')],
+                                  PointsCollection(self.visible_vert[broom.p1.ind].copy(), color='green')],
                                  [LinesCollection(self.lines, color='grey'),
                                   LinesCollection(self.broom_line, color='red'),
                                   LinesCollection(lines)]))
 
         if visible_flag:
-            self.visible_vert.append(second_point)
+            self.visible_vert[broom.p1.ind].append(second_point)
             self.scenes.append(Scene([PointsCollection(self.points, color='grey'),
                                       PointsCollection([first_point], color='orange'),
                                       PointsCollection([second_point], color='lime'),
-                                      PointsCollection(self.visible_vert.copy(), color='green')],
+                                      PointsCollection(self.visible_vert[broom.p1.ind].copy(), color='green')],
+                                     [LinesCollection(self.lines, color='grey'),
+                                      LinesCollection(self.broom_line, color='red'),
+                                      LinesCollection(lines)]))
+
+        elif first_point in self.visible_vert[broom.p2.ind]:
+            self.visible_vert[broom.p1.ind].append(second_point)
+            self.scenes.append(Scene([PointsCollection(self.points, color='grey'),
+                                      PointsCollection([first_point], color='orange'),
+                                      PointsCollection([second_point], color='lime'),
+                                      PointsCollection(self.visible_vert[broom.p1.ind].copy(), color='green')],
+                                     [LinesCollection(self.lines, color='grey'),
+                                      LinesCollection(self.broom_line, color='red'),
+                                      LinesCollection(lines)]))
+
+        else:
+            self.scenes.append(Scene([PointsCollection(self.points, color='grey'),
+                                      PointsCollection([first_point], color='orange'),
+                                      PointsCollection([second_point], color='lime'),
+                                      PointsCollection(self.visible_vert[broom.p1.ind].copy(), color='green'),
+                                      PointsCollection([second_point], color='red')],
                                      [LinesCollection(self.lines, color='grey'),
                                       LinesCollection(self.broom_line, color='red'),
                                       LinesCollection(lines)]))
 
     def graph_connection_scene(self, point: Point):
-        edges = [[(self.visible_vert[i][0],self.visible_vert[i][1]),
-                  (point.x, point.y)] for i in range(len(self.visible_vert))]
+        edges = [[(self.visible_vert[point.ind][i][0],self.visible_vert[point.ind][i][1]),
+                  (point.x, point.y)] for i in range(len(self.visible_vert[point.ind]))]
 
         self.scenes.append(Scene([PointsCollection(self.points, color='grey'),
                                   PointsCollection([(point.x, point.y)], color='orange'),
-                                  PointsCollection(self.visible_vert.copy(), color='green')],
+                                  PointsCollection(self.visible_vert[point.ind].copy(), color='green')],
                                  [LinesCollection(self.lines, color='grey'),
                                   LinesCollection(edges, color='green')]))
 
