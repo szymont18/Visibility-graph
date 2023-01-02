@@ -290,11 +290,13 @@ class Obstacle:
         return False
 
     def isDiagonal(self, line: Line):
-        p0 = Point(((line.p1.x + line.p2.x/2), (line.p1.y + line.p2.y)/2),-5,-5)
+        a = (line.p1.x + line.p2.x)/2
+        b = (line.p1.y + line.p2.y)/2
+        p0 = Point((a,b),-1,-1)
 
 
 
-        Ray = Line(p0,Point((10,p0.x),-1,-1))
+        Ray = Line(p0,Point((10,p0.y),-1,-1))
         intersectCount = 0
         for i in self.edges:
             if Ray.intersects_line(i):
