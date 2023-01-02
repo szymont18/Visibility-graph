@@ -15,15 +15,14 @@ class mySortedList:
         self.tab.insert(index, val)
 
     def removeElement(self,val: Line):
-        index = bisect.bisect_left(self.tab, val)-1
-        #binindex = self.binSearch(val, Line.cmpLine)
+        #index = bisect.bisect_right(self.tab, val)-1
+        binindex = self.binSearch(val, Line.cmpLine)
 
-        for i in range(max(index,0), len(self.tab)):
+        for i in range(max(binindex,0), len(self.tab)):
             if self.tab[i] == val:
                 self.tab.pop(i)
                 return True
-        for i in range(len(self.tab)):
-            print(self.tab[i])
+        print("FAILED TO REMOVE ", val, "from index: ", binindex)
         return False
 
     def __len__(self):
@@ -48,14 +47,30 @@ class mySortedList:
 
 
         tarLen = math.sqrt((op.x - targetIntersection[0])**2 + (op.y - targetIntersection[1])**2)
-        while l < r:
+        while r >= l:
             mid = (l+r)//2
-            print(mid, self.tab[mid])
+            #print(mid, self.tab[mid], el)
             ipoint = halfLine.getIntersectionPoint(self.tab[mid])
             clen = math.sqrt((op.x-ipoint[0])**2 + (op.y - ipoint[1])**2)
-            if clen - tarLen > EPS:
-                r = mid-1
-            elif clen - tarLen < -EPS:
+
+            if mid != 0:
+                im1point = halfLine.getIntersectionPoint(self.tab[mid - 1])
+                clen2 = math.sqrt((op.x - im1point[0]) ** 2 + (op.y - im1point[1]) ** 2)
+
+            if mid == 0 or (tarLen - clen2 > 0 and abs(clen-tarLen) < EPS):
+                return mid
+            elif tarLen - clen > EPS:
                 l = mid+1
             else:
-                return mid
+                r = mid-1
+            #if clen - tarLen > EPS:
+             #   r = mid-1
+            #elif clen - tarLen < -EPS:
+             #   l = mid+1
+            #else:
+             #   if mid!=0:
+
+                  #  if tarLen - clen2 > EPS and abs(tarLen-clen) < EPS:
+                   #     return mid
+                #elif mid==0:
+                 #   return mid

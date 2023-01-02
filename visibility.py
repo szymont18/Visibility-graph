@@ -54,6 +54,8 @@ def visible(w: Point, pw: Line, obstacles: list[Obstacle], i: int, w_list: list[
 
 def visible_vertices(point: Point, obstacles: list[Obstacle], graph: Graph, vertices: list[Point],
                      visualiser: VisibilityVisualiser):
+
+    #print("\n\n\norigin::::: ", point)
     BroomT = mySortedList()
     w_list = copy.deepcopy(vertices)
     if point.ind != 0:
@@ -110,15 +112,29 @@ def visible_vertices(point: Point, obstacles: list[Obstacle], graph: Graph, vert
 
         w_obstacle = obstacles[w_list[i].oind]
         temp = w_obstacle.get_incident_lines(w_list[i])
+        truecnt = 0
+        if temp[0].seenCount == True and temp[1].seenCount == True:
+            truecnt+=1
         for edge in temp:
-            x = half_line.get_len()
+            #print("\ninserting/removing:: ", edge)
+
             if edge.seenCount == True:  # lie on the COUNTERclockwise side
+                if truecnt==2:
+                    oldVal = half_line.b
+                    half_line.b+=10*EPS
+                    half_line.b = oldVal
                 edge.seenCount = False
                 #find_and_remove(BroomT, edge)
                 BroomT.removeElement(edge)
             elif edge.seenCount == False and edge != half_line:  # lie on the clockwise side
                 edge.seenCount = True
                 BroomT.insertInOrder(edge)
+
+            #print("after: ")
+            #for i in range(len(BroomT)):
+             #   print(BroomT[i])
+
+        #print("\n")
 
 
     if visualiser is not None:

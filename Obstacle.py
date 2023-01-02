@@ -66,15 +66,15 @@ class Point:
         return self.ind == other.ind
 
     def __gt__(self, other):
-        # angle1 = self.findAngle()
-        # angle2 = other.findAngle()
-        #
-        # if angle1 > angle2:
-        #     return False
-        # elif angle1 < angle2:
-        #     return True
-        # else:
-        #     return self.dist_sqr() > other.dist_sqr()
+         angle1 = self.findAngle()
+         angle2 = other.findAngle()
+
+         if angle1 > angle2:
+             return False
+         elif angle1 < angle2:
+             return True
+         else:
+             return self.dist_sqr() > other.dist_sqr()
 
 
         #1,2
@@ -88,9 +88,9 @@ class Point:
 
 
 
-        o1 = orient(Point.origin, self, other)
-        if o1 > 0:
-           return True
+        #o1 = orient(Point.origin, self, other)
+        #if o1 > 0:
+         #  return True
         #elif o1 < 0:
         #    return False
         #else:
@@ -102,6 +102,8 @@ class Line:
     def __init__(self, p1, p2):  # p1 = Point a, p2 = Point b
         self.p1 = p1
         self.p2 = p2
+
+        currentAngle = 0
 
         t1 = p1.x - p2.x
 
