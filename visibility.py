@@ -25,9 +25,12 @@ def visible(w: Point, pw: Line, obstacles: list[Obstacle], i: int, w_list: list[
     w_obstacle = obstacles[w.oind]
 
     if w.oind == pw.p1.oind:
+        if w_obstacle.same_line(pw.p1, pw.p2):
+            return True
+
+    if w.oind == pw.p1.oind:
         if w_obstacle.isDiagonal(pw): # Diagonal Check
             return False
-        return True
 
 
     if len(w_obstacle.get_intersecting_edges(pw)) != 0:# Intersect the interior of the w_obstacle
