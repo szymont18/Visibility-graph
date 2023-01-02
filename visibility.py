@@ -49,7 +49,7 @@ def visible(w: Point, pw: Line, obstacles: list[Obstacle], i: int, w_list: list[
 
 def visible_vertices(point: Point, obstacles: list[Obstacle], graph: Graph, vertices: list[Point],
                      visualiser: VisibilityVisualiser):
-    BroomT = SortedList()
+    BroomT = mySortedList()
     w_list = copy.deepcopy(vertices)
     if point.ind != 0:
         w_list.remove(vertices[0])
@@ -73,7 +73,7 @@ def visible_vertices(point: Point, obstacles: list[Obstacle], graph: Graph, vert
 
         for edge in edges:
             edge.seenCount= True
-            BroomT.add(edge)
+            BroomT.insertInOrder(edge)
 
     if visualiser is not None:
         lines = [it for it in BroomT]
@@ -105,16 +105,23 @@ def visible_vertices(point: Point, obstacles: list[Obstacle], graph: Graph, vert
 
         w_obstacle = obstacles[w_list[i].oind]
         temp = w_obstacle.get_incident_lines(w_list[i])
+        #print("\n\n")
         for edge in temp:
             x = half_line.get_len()
             if edge.seenCount == True:  # lie on the COUNTERclockwise side
+                #print("removing: ", edge)
                 edge.seenCount = False
-                find_and_remove(BroomT, edge)
-                #BroomT.removeElement(edge)
+                #find_and_remove(BroomT, edge)
+                BroomT.removeElement(edge)
             elif edge.seenCount == False and edge != half_line:  # lie on the clockwise side
+                #print("inserting: ", edge)
                 edge.seenCount = True
-                BroomT.add(edge)
+                BroomT.insertInOrder(edge)
 
+        #print("after inserting:: ")
+        #for i in range(len(BroomT)):
+            #print(BroomT[i])
+        #print("\n\n")
     if visualiser is not None:
         visualiser.graph_connection_scene(point)
 
