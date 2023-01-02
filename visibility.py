@@ -89,7 +89,6 @@ def visible_vertices(point: Point, obstacles: list[Obstacle], graph: Graph, vert
             lines = [it[1] for it in BroomT]
             visualiser.change_broom_scene(half_line, lines, False)
 
-
         if w_list[i].ind == vertices[-1].ind: continue
 
         w_obstacle = obstacles[w_list[i].oind]
