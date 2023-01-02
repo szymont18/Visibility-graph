@@ -293,10 +293,10 @@ class Obstacle:
     def isDiagonal(self, line: Line):
         p0 = line.p1
 
-        lines = self.get_incident_lines(self, p0)
+        lines = self.get_incident_lines(p0)
 
         if cross_prod(lines[0], line)*cross_prod(line,lines[1]) >= 0:
-            return True
+            return False
 
-        return False
+        return True
 
