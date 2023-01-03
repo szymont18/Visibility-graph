@@ -121,7 +121,12 @@ def visible_vertices(point: Point, obstacles: list[Obstacle], graph: Graph, vert
 
             if edge.seenCount == True:  # lie on the COUNTERclockwise side
                 edge.seenCount = False
-                BroomT.remove(edge)
+                try:
+                    BroomT.remove(edge)
+                except ValueError:
+                    print("tried removing ", edge, "  from  \n")
+                    for i in range(len(BroomT)):
+                        print(BroomT[i])
             elif edge.seenCount == False and edge != half_line:  # lie on the clockwise side
                 edge.seenCount = True
                 BroomT.add(edge)

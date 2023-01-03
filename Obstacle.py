@@ -96,6 +96,12 @@ class Point:
         #else:
          #   return Point.origin.distance(self) >= Point.origin.distance(other)
 
+def onSegment(p, q, r): #check if point r is on line segment (p,q)
+    if ( (q.x <= max(p.x, r.x)) and (q.x >= min(p.x, r.x)) and
+        (q.y <= max(p.y, r.y)) and (q.y >= min(p.y, r.y))):
+        return True
+    return False
+
 
 class Line:
     cmpLine = None
@@ -156,12 +162,22 @@ class Line:
         o3 = orient(q1, q2, p1)
         o4 = orient(q1, q2, p2)
         #print(o1,o2,o3,o4)
-        if (o1 != o2) and (o3 != o4) and o1 != 0 and o2 != 0 and o3 != 0 and o4 != 0:
+        if (o1 != o2) and (o3 != o4):
             #print("line ", self.p1.ind, self.p2.ind, " intersects ", other.p1.ind, other.p2.ind)
             return True
 
-        if (o1 == 0 or o2 == 0) and (o3 == 0 or o4 == 0) and (other.p1 == self.p2 or other.p2 == self.p2):
+        if o1 == 0 and onSegment(p1,p1,q1):
             return False
+
+        if o2 == 0 and onSegment(p1,q2,q1):
+            return False
+
+        if o3 == 0 and onSegment(p2,p1,q2):
+            return False
+
+        if o4 == 0 and onSegment(p2,q1,q2):
+            return False
+
         return False
 
     def __eq__(self, other):
@@ -220,6 +236,11 @@ class Line:
                             return True
                         else:
                             return False
+                    elif orient(mainpoint, p2, p0) != orient(mainpoint,p4,p0):
+                        if o <0:
+                            return True
+                        else:
+                            return False
                     else:
                         if o >0:
                             return True
@@ -228,6 +249,11 @@ class Line:
                 elif p4==mainpoint:
                     o = orient(mainpoint,p2,p3)
                     if orient(mainpoint, p2, p0) == orient(mainpoint,p3,p0) < 0:
+                        if o <0:
+                            return True
+                        else:
+                            return False
+                    elif orient(mainpoint, p2, p0) != orient(mainpoint,p3,p0):
                         if o <0:
                             return True
                         else:
@@ -246,6 +272,11 @@ class Line:
                             return True
                         else:
                             return False
+                    elif orient(mainpoint, p1, p0) != orient(mainpoint,p4,p0):
+                        if o <0:
+                            return True
+                        else:
+                            return False
                     else:
                         if o > 0:
                             return True
@@ -254,6 +285,11 @@ class Line:
                 elif p4==mainpoint:
                     o = orient(mainpoint,p1,p3)
                     if orient(mainpoint, p1, p0) == orient(mainpoint,p3,p0) < 0:
+                        if o <0:
+                            return True
+                        else:
+                            return False
+                    elif orient(mainpoint, p1, p0) != orient(mainpoint,p3,p0):
                         if o <0:
                             return True
                         else:
