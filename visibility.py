@@ -112,19 +112,15 @@ def visible_vertices(point: Point, obstacles: list[Obstacle], graph: Graph, vert
 
         w_obstacle = obstacles[w_list[i].oind]
         temp = w_obstacle.get_incident_lines(w_list[i])
-        truecnt = 0
-        if temp[0].seenCount == True and temp[1].seenCount == True:
-            truecnt+=1
+
+        if temp[0].seenCount == False and temp[1].seenCount == True: #prioritise removing over adding
+            temp[0], temp[1] = temp[1], temp[0]
+
         for edge in temp:
             #print("\ninserting/removing:: ", edge)
 
             if edge.seenCount == True:  # lie on the COUNTERclockwise side
-                if truecnt==2:
-                    oldVal = half_line.b
-                    half_line.b+=10*EPS
-                    half_line.b = oldVal
                 edge.seenCount = False
-                #find_and_remove(BroomT, edge)
                 BroomT.remove(edge)
             elif edge.seenCount == False and edge != half_line:  # lie on the clockwise side
                 edge.seenCount = True
