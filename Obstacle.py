@@ -212,6 +212,7 @@ class Line:
             mainpoint = None
             if p1 == Line.cmpLine.p2:
                 mainpoint = p1
+
                 if p3==mainpoint:
                     o = orient(mainpoint,p2,p4)
                     if orient(mainpoint, p2, p0) == orient(mainpoint,p4,p0) < 0:
@@ -239,8 +240,8 @@ class Line:
             elif p2 == Line.cmpLine.p2:
                 mainpoint = p2
                 if p3==mainpoint:
-                    o = orient(mainpoint,p2,p4)
-                    if orient(mainpoint, p2, p0) == orient(mainpoint, p4, p0) < 0:
+                    o = orient(mainpoint,p1,p4)
+                    if orient(mainpoint, p1, p0) == orient(mainpoint, p4, p0) < 0:
                         if o < 0:
                             return True
                         else:
@@ -251,8 +252,8 @@ class Line:
                         else:
                             return False
                 elif p4==mainpoint:
-                    o = orient(mainpoint,p2,p3)
-                    if orient(mainpoint, p2, p0) == orient(mainpoint,p3,p0) < 0:
+                    o = orient(mainpoint,p1,p3)
+                    if orient(mainpoint, p1, p0) == orient(mainpoint,p3,p0) < 0:
                         if o <0:
                             return True
                         else:
