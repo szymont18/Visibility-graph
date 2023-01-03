@@ -4,7 +4,7 @@ from Obstacle import *
 from mySortedList import mySortedList
 from util import *
 import copy
-from sortedcontainers import SortedList
+from sortedcontainers import SortedSet
 from Visualiser import *
 
 import copy
@@ -56,7 +56,7 @@ def visible_vertices(point: Point, obstacles: list[Obstacle], graph: Graph, vert
                      visualiser: VisibilityVisualiser):
 
     #print("\n\n\norigin::::: ", point)
-    BroomT = mySortedList()
+    BroomT = SortedSet()
     w_list = copy.deepcopy(vertices)
     if point.ind != 0:
         w_list.remove(vertices[0])
@@ -80,7 +80,7 @@ def visible_vertices(point: Point, obstacles: list[Obstacle], graph: Graph, vert
 
         for edge in edges:
             edge.seenCount= True
-            BroomT.insertInOrder(edge)
+            BroomT.add(edge)
 
     if visualiser is not None:
         lines = [it for it in BroomT]
@@ -125,10 +125,10 @@ def visible_vertices(point: Point, obstacles: list[Obstacle], graph: Graph, vert
                     half_line.b = oldVal
                 edge.seenCount = False
                 #find_and_remove(BroomT, edge)
-                BroomT.removeElement(edge)
+                BroomT.remove(edge)
             elif edge.seenCount == False and edge != half_line:  # lie on the clockwise side
                 edge.seenCount = True
-                BroomT.insertInOrder(edge)
+                BroomT.add(edge)
 
             #print("after: ")
             #for i in range(len(BroomT)):

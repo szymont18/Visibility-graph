@@ -176,6 +176,33 @@ class Line:
         dist2 = math.sqrt((porigin.x - otherIntersectionPoint[0]) ** 2 + (porigin.y - otherIntersectionPoint[1]) ** 2)
 
         if abs(dist1-dist2) < EPS:
+            '''if self.p1.x < self.p2.x:
+                min1 = self.p1
+                max1 = self.p2
+            else:
+                max1 = self.p1
+                min1 = self.p2
+
+            if other.p1.x < other.p2.x:
+                min2 = other.p1
+                max2 = other.p2
+            else:
+                max2 = other.p1
+                min2 = other.p2
+
+            mindist1 = min1.distance(Line.cmpLine.p1)
+            mindist2 = min2.distance(Line.cmpLine.p1)
+
+            if abs(mindist1 - mindist2) < EPS:
+                maxdist1 = max1.distance(Line.cmpLine.p1)
+                maxdist2 = max2.distance(Line.cmpLine.p1)
+
+                return maxdist1 > maxdist2
+            else:
+                return mindist1 > mindist2'''
+
+            p0 = Line.cmpLine.p1
+
             p1 = self.p1
             p2 = self.p2
 
@@ -187,30 +214,54 @@ class Line:
                 mainpoint = p1
                 if p3==mainpoint:
                     o = orient(mainpoint,p2,p4)
-                    if o <0:
-                        return True
+                    if orient(mainpoint, p2, p0) == orient(mainpoint,p4,p0) < 0:
+                        if o <0:
+                            return True
+                        else:
+                            return False
                     else:
-                        return False
+                        if o >0:
+                            return True
+                        else:
+                            return False
                 elif p4==mainpoint:
                     o = orient(mainpoint,p2,p3)
-                    if o < 0:
-                        return True
+                    if orient(mainpoint, p2, p0) == orient(mainpoint,p3,p0) < 0:
+                        if o <0:
+                            return True
+                        else:
+                            return False
                     else:
-                        return False
+                        if o >0:
+                            return True
+                        else:
+                            return False
             elif p2 == Line.cmpLine.p2:
                 mainpoint = p2
                 if p3==mainpoint:
                     o = orient(mainpoint,p2,p4)
-                    if o <0:
-                        return True
+                    if orient(mainpoint, p2, p0) == orient(mainpoint, p4, p0) < 0:
+                        if o < 0:
+                            return True
+                        else:
+                            return False
                     else:
-                        return False
+                        if o > 0:
+                            return True
+                        else:
+                            return False
                 elif p4==mainpoint:
                     o = orient(mainpoint,p2,p3)
-                    if o < 0:
-                        return True
+                    if orient(mainpoint, p2, p0) == orient(mainpoint,p3,p0) < 0:
+                        if o <0:
+                            return True
+                        else:
+                            return False
                     else:
-                        return False
+                        if o >0:
+                            return True
+                        else:
+                            return False
 
         return dist1-dist2 > EPS
 
@@ -224,6 +275,9 @@ class Line:
         dist = math.sqrt((op.x - sp[0])**2 + (op.y-sp[1])**2)
 
         return str(self.p1) +"     "+ str(self.p2) +"    "+ str(dist) + "  ("+str(op)+")"
+
+    def __hash__(self):
+        return hash((self.p1.ind, self.p2.ind))
 
     def get_len(self):
         return math.sqrt((self.p2.x - self.p1.x) ** 2 + (self.p2.y - self.p1.y) ** 2)

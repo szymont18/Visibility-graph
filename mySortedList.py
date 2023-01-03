@@ -15,9 +15,10 @@ class mySortedList:
         self.tab.insert(index, val)
 
     def removeElement(self,val: Line):
+        index = bisect.bisect_left(self.tab, val)
         binindex = self.binSearch(val, Line.cmpLine)
 
-        for i in range(max(binindex,0), len(self.tab)):
+        for i in range(max(index,0), len(self.tab)):
             if self.tab[i] == val:
                 self.tab.pop(i)
                 return True
