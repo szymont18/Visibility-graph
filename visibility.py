@@ -4,7 +4,7 @@ from Obstacle import *
 from mySortedList import mySortedList
 from util import *
 import copy
-from sortedcontainers import SortedList
+from sortedcontainers import SortedSet
 from Visualiser import *
 
 import copy
@@ -54,7 +54,9 @@ def visible(w: Point, pw: Line, obstacles: list[Obstacle], i: int, w_list: list[
 
 def visible_vertices(point: Point, obstacles: list[Obstacle], graph: Graph, vertices: list[Point],
                      visualiser: VisibilityVisualiser):
-    BroomT = mySortedList()
+
+    #print("\n\n\norigin::::: ", point)
+    BroomT = SortedSet()
     w_list = copy.deepcopy(vertices)
     if point.ind != 0:
         w_list.remove(vertices[0])
@@ -78,7 +80,7 @@ def visible_vertices(point: Point, obstacles: list[Obstacle], graph: Graph, vert
 
         for edge in edges:
             edge.seenCount= True
-            BroomT.insertInOrder(edge)
+            BroomT.add(edge)
 
     if visualiser is not None:
         lines = [it for it in BroomT]
@@ -110,15 +112,30 @@ def visible_vertices(point: Point, obstacles: list[Obstacle], graph: Graph, vert
 
         w_obstacle = obstacles[w_list[i].oind]
         temp = w_obstacle.get_incident_lines(w_list[i])
+
+        if temp[0].seenCount == False and temp[1].seenCount == True: #prioritise removing over adding
+            temp[0], temp[1] = temp[1], temp[0]
+
         for edge in temp:
-            x = half_line.get_len()
+            #print("\ninserting/removing:: ", edge)
+
             if edge.seenCount == True:  # lie on the COUNTERclockwise side
                 edge.seenCount = False
-                #find_and_remove(BroomT, edge)
-                BroomT.removeElement(edge)
+                try:
+                    BroomT.remove(edge)
+                except ValueError:
+                    print("tried removing ", edge, "  from  \n")
+                    for i in range(len(BroomT)):
+                        print(BroomT[i])
             elif edge.seenCount == False and edge != half_line:  # lie on the clockwise side
                 edge.seenCount = True
-                BroomT.insertInOrder(edge)
+                BroomT.add(edge)
+
+            #print("after: ")
+            #for i in range(len(BroomT)):
+             #   print(BroomT[i])
+
+        #print("\n")
 
 
     if visualiser is not None:
