@@ -33,7 +33,7 @@ def get_obstacle_from_linesCollection(lcol: LinesCollection, pointcount: int, ob
 
 def get_added_elements(plot1: Plot, lines=None, points=None):
     obstList = []
-
+    Point.max_X = -float('inf')
     if points is None:
         start_end = plot1.get_added_points()
 
@@ -54,7 +54,7 @@ def get_added_elements(plot1: Plot, lines=None, points=None):
     obstacleCounter = 0
 
     for i in range(len(plotLines)):
-        if plotLines[i].lines:  # I do not know why there are some empty LinesCollection
+        if plotLines[i].lines:
             res = get_obstacle_from_linesCollection(plotLines[i], pointCounter, obstacleCounter)
             obstacleCounter += 1
             pointCounter = res[2]
