@@ -1,26 +1,17 @@
 import math
 import numpy as np
 
-EPS = 10 ** (-13)
+EPS = 10 ** (-10)
 
 
 def orient(p1, p2, p3):
     valo = np.linalg.det([[p1.x, p1.y, 1], [p2.x, p2.y, 1], [p3.x, p3.y, 1]])
-    #print(p1.x, p1.y, p2.ind, "   ", p2.x, p2.y, p2.ind, "   ", p3.x, p3.y, p3.ind, "   ", round(valo, 4))
     if valo > EPS:
         return 1
     elif valo < -1*EPS:
         return -1
     else:
         return 0
-
-
-def cross_prod(l1, l2):
-    v1 = (l1.p1.x - l1.p2.x, l1.p1.y - l1.p2.y)
-    v2 = (l2.p1.x - l2.p2.x, l2.p1.y - l2.p2.y)
-    #print(v1[0] * v2[1] - v1[1] * v2[0])
-    return v1[0] * v2[1] - v1[1] * v2[0]
-
 
 class Point:
     origin = None
@@ -77,43 +68,15 @@ class Point:
              return self.dist_sqr() > other.dist_sqr()
 
 
-        #1,2
-        #if (self.x - Point.origin.x >= 0 and self.y - Point.origin.y > 0)\
-         #       and (other.x - Point.origin.x >= 0 and other.y - Point.origin.y <= 0):
-          #  return True
-        #if (self.x - Point.origin.x >= 0 and self.y - Point.origin.y <= 0)\
-         #       and (other.x - Point.origin.x >= 0 and other.y - Point.origin.y > 0):
-          #  return False
-
-
-
-
-        #o1 = orient(Point.origin, self, other)
-        #if o1 > 0:
-         #  return True
-        #elif o1 < 0:
-        #    return False
-        #else:
-         #   return Point.origin.distance(self) >= Point.origin.distance(other)
-
-def onSegment(p, q, r): #check if point r is on line segment (p,q)
-    if ( (q.x <= max(p.x, r.x)) and (q.x >= min(p.x, r.x)) and
-        (q.y <= max(p.y, r.y)) and (q.y >= min(p.y, r.y))):
-        return True
-    return False
-
-
 class Line:
     cmpLine = None
     def __init__(self, p1, p2):  # p1 = Point a, p2 = Point b
         self.p1 = p1
         self.p2 = p2
 
-        currentAngle = 0
-
         t1 = p1.x - p2.x
 
-        if abs(t1) < EPS:
+        if t1 < EPS and t1 > -1 * EPS:
             self.m = 0
         else:
             self.m = (p1.y - p2.y) / t1
@@ -126,29 +89,9 @@ class Line:
             self.xIntercept = -1 * self.b / self.m
 
         self.seenCount = False
-        self.sweepDistance = 0
-
-    def half_line_orientation(self, halfLine):
-        hp2 = halfLine.p2
-
-        #if self.p1 == hp2:
-        #t = cross_prod(halfLine, self)
-        if self.seenCount%2 == 0:
-            return -1  # cw
-        else:
-            return 1  # ccw
-        #else:
-         #   t = cross_prod(halfLine, Line(self.p2, self.p1))
-          #  if t > 0:
-           #     return 1  # cw
-            #else:
-             #   return -1  # ccw
 
     def updateCmpLine(line):
         Line.cmpLine = line
-
-    def getLineValAtX(self, x):
-        return self.m * x + self.b
 
     def intersects_line(self, other):
         p1 = self.p1
@@ -161,23 +104,11 @@ class Line:
         o2 = orient(p1, p2, q2)
         o3 = orient(q1, q2, p1)
         o4 = orient(q1, q2, p2)
-        #print(o1,o2,o3,o4)
-        if (o1 != o2) and (o3 != o4) and o1 != 0 and o2 != 0 and o3 != 0 and o4 !=0:
-            #print("line ", self.p1.ind, self.p2.ind, " intersects ", other.p1.ind, other.p2.ind)
+        if (o1 != o2) and (o3 != o4) and o1 != 0 and o2 != 0 and o3 != 0 and o4 != 0:
             return True
 
-        '''if o1 == 0 and onSegment(p1,p1,q1):
-            return True
-
-        if o2 == 0 and onSegment(p1,q2,q1):
-            return True
-
-        if o3 == 0 and onSegment(p2,p1,q2):
-            return True
-
-        if o4 == 0 and onSegment(p2,q1,q2):
-            return True'''
-
+        if (o1 == 0 or o2 == 0) and (o3 == 0 or o4 == 0) and (other.p1 == self.p2 or other.p2 == self.p2):
+            return False
         return False
 
     def __eq__(self, other):
@@ -188,35 +119,10 @@ class Line:
         selfintersectionpoint = self.getIntersectionPoint(Line.cmpLine)
         otherIntersectionPoint = other.getIntersectionPoint(Line.cmpLine)
         porigin = Line.cmpLine.p1
-        dist1 = (porigin.x - selfintersectionpoint[0])**2 + (porigin.y - selfintersectionpoint[1])**2
-        dist2 = (porigin.x - otherIntersectionPoint[0]) ** 2 + (porigin.y - otherIntersectionPoint[1]) ** 2
+        dist1 = math.sqrt((porigin.x - selfintersectionpoint[0])**2 + (porigin.y - selfintersectionpoint[1])**2)
+        dist2 = math.sqrt((porigin.x - otherIntersectionPoint[0]) ** 2 + (porigin.y - otherIntersectionPoint[1]) ** 2)
 
         if abs(dist1-dist2) < EPS:
-            '''if self.p1.x < self.p2.x:
-                min1 = self.p1
-                max1 = self.p2
-            else:
-                max1 = self.p1
-                min1 = self.p2
-
-            if other.p1.x < other.p2.x:
-                min2 = other.p1
-                max2 = other.p2
-            else:
-                max2 = other.p1
-                min2 = other.p2
-
-            mindist1 = min1.distance(Line.cmpLine.p1)
-            mindist2 = min2.distance(Line.cmpLine.p1)
-
-            if abs(mindist1 - mindist2) < EPS:
-                maxdist1 = max1.distance(Line.cmpLine.p1)
-                maxdist2 = max2.distance(Line.cmpLine.p1)
-
-                return maxdist1 > maxdist2
-            else:
-                return mindist1 > mindist2'''
-
             p0 = Line.cmpLine.p1
 
             p1 = self.p1
@@ -236,11 +142,6 @@ class Line:
                             return True
                         else:
                             return False
-                    elif orient(mainpoint, p2, p0) != orient(mainpoint,p4,p0):
-                        if o <0:
-                            return True
-                        else:
-                            return False
                     else:
                         if o >0:
                             return True
@@ -249,11 +150,6 @@ class Line:
                 elif p4==mainpoint:
                     o = orient(mainpoint,p2,p3)
                     if orient(mainpoint, p2, p0) == orient(mainpoint,p3,p0) < 0:
-                        if o <0:
-                            return True
-                        else:
-                            return False
-                    elif orient(mainpoint, p2, p0) != orient(mainpoint,p3,p0):
                         if o <0:
                             return True
                         else:
@@ -272,11 +168,6 @@ class Line:
                             return True
                         else:
                             return False
-                    elif orient(mainpoint, p1, p0) != orient(mainpoint,p4,p0):
-                        if o <0:
-                            return True
-                        else:
-                            return False
                     else:
                         if o > 0:
                             return True
@@ -289,74 +180,11 @@ class Line:
                             return True
                         else:
                             return False
-                    elif orient(mainpoint, p1, p0) != orient(mainpoint,p3,p0):
-                        if o <0:
-                            return True
-                        else:
-                            return False
                     else:
                         if o >0:
                             return True
                         else:
                             return False
-
-            '''len0main = Line.cmpLine.get_len()
-
-            lenmain2 = self.get_len()
-            lenmain4 = other.get_len()
-
-            if self.p1 == Line.cmpLine.p2:
-                mainpoint = self.p1
-
-                if other.p1 == mainpoint:
-                    templine1 = Line(Line.cmpLine.p1,self.p2)
-                    tempLine2 = Line(Line.cmpLine.p1, other.p2)
-                    tl1len = templine1.get_len()
-                    tl2len = tempLine2.get_len()
-
-                    angle1val = (tl1len**2 - lenmain2**2 - len0main**2)/(2*lenmain2*len0main)
-                    angle2val = (tl2len**2 - lenmain4**2 - len0main**2)/(2*lenmain4*len0main)
-                    print("if1: ", angle1val, angle2val)
-
-                    return math.acos(angle1val) < math.acos(angle2val)
-
-                elif other.p2 == mainpoint:
-                    templine1 = Line(Line.cmpLine.p1, self.p2)
-                    tempLine2 = Line(Line.cmpLine.p1, other.p1)
-                    tl1len = templine1.get_len()
-                    tl2len = tempLine2.get_len()
-
-                    angle1val = (tl1len ** 2 - lenmain2 ** 2 - len0main ** 2) / (2 * lenmain2 * len0main)
-                    angle2val = (tl2len ** 2 - lenmain4 ** 2 - len0main ** 2) / (2 * lenmain4 * len0main)
-                    print("if2: ", angle1val, angle2val)
-                    return math.acos(angle1val) < math.acos(angle2val)
-            elif self.p2 == Line.cmpLine.p2:
-                mainpoint = self.p2
-                if other.p1 == mainpoint:
-                    templine1 = Line(Line.cmpLine.p1, self.p1)
-                    tempLine2 = Line(Line.cmpLine.p1, other.p2)
-                    tl1len = templine1.get_len()
-                    tl2len = tempLine2.get_len()
-
-                    angle1val = (tl1len ** 2 - lenmain2 ** 2 - len0main ** 2) / (2 * lenmain2 * len0main)
-                    angle2val = (tl2len ** 2 - lenmain4 ** 2 - len0main ** 2) / (2 * lenmain4 * len0main)
-                    print("if3: ", angle1val, angle2val)
-                    return math.acos(angle1val) < math.acos(angle2val)
-
-                elif other.p2 == mainpoint:
-                    templine1 = Line(Line.cmpLine.p1, self.p1)
-                    tempLine2 = Line(Line.cmpLine.p1, other.p1)
-                    tl1len = templine1.get_len()
-                    tl2len = tempLine2.get_len()
-
-                    angle1val = (tl1len ** 2 - lenmain2 ** 2 - len0main ** 2) / (2 * lenmain2 * len0main)
-                    angle2val = (tl2len ** 2 - lenmain4 ** 2 - len0main ** 2) / (2 * lenmain4 * len0main)
-                    print("if4: ", angle1val, angle2val)
-                    return math.acos(angle1val) < math.acos(angle2val)'''
-
-
-
-
 
         return dist1-dist2 > EPS
 
@@ -373,9 +201,6 @@ class Line:
 
     def __hash__(self):
         return hash((self.p1.ind, self.p2.ind))
-
-    def get_len(self):
-        return math.sqrt((self.p2.x - self.p1.x) ** 2 + (self.p2.y - self.p1.y) ** 2)
 
     def update_sweep_len(self, new):
         self.sweepDistance = new
@@ -429,7 +254,6 @@ class Obstacle:
             if line.intersects_line(i):
                 if line.p2.x == Point.max_X:
                     intersectionPoint = line.getIntersectionPoint(i)
-                    i.update_sweep_len(math.sqrt((line.p1.x-intersectionPoint[0])**2 + (line.p1.y - intersectionPoint[1])**2))
                 rettab.append(i)
         return rettab
 
@@ -444,7 +268,6 @@ class Obstacle:
         a = (line.p1.x + line.p2.x)/2
         b = (line.p1.y + line.p2.y)/2
         p0 = Point((a,b),-1,-1)
-
 
 
         Ray = Line(p0,Point((10,p0.y),-1,-1))

@@ -1,15 +1,7 @@
-from Graph import *
-from graphicTool import *
-from Obstacle import *
-from mySortedList import mySortedList
-from util import *
-import copy
-from sortedcontainers import SortedSet
+from sortedcontainers import SortedList, SortedSet
 from Visualiser import *
-
 import copy
-from sortedcontainers import SortedList
-import bisect
+
 
 
 
@@ -32,7 +24,6 @@ def visible(w: Point, pw: Line, obstacles: list[Obstacle], i: int, w_list: list[
         if w_obstacle.isDiagonal(pw): # Diagonal Check
             return False
 
-
     if len(w_obstacle.get_intersecting_edges(pw)) != 0:# Intersect the interior of the w_obstacle
         return False
 
@@ -46,7 +37,7 @@ def visible(w: Point, pw: Line, obstacles: list[Obstacle], i: int, w_list: list[
 
     elif not visible_list[i - 1]:  # w(i-1) is not visible
         return False
-    else:  # Search in BroomT for an edge e that intersect w(i - 1)w (not implemented yet)
+    else:  # Search in BroomT for an edge e that intersect w(i - 1)w
         if searchForIntersection(BroomT, pw):
             return True
         else:
@@ -55,20 +46,15 @@ def visible(w: Point, pw: Line, obstacles: list[Obstacle], i: int, w_list: list[
 def visible_vertices(point: Point, obstacles: list[Obstacle], graph: Graph, vertices: list[Point],
                      visualiser: VisibilityVisualiser):
 
-    #print("\n\n\norigin::::: ", point)
     BroomT = SortedSet()
     w_list = copy.deepcopy(vertices)
     if point.ind != 0:
         w_list.remove(vertices[0])
 
-    # Sometimes there are edge between start and end points
-    # if point.ind != vertices[-1].ind:
-    #     w_list.remove(vertices[-1])
-
     w_list.remove(point)
     Point.update_origin(point)
 
-    w_list = sorted(w_list)  # Sorting with angle, should be with dets
+    w_list = sorted(w_list)
     half_line = Line(point, Point((Point.max_X, point.y), -3, -3))
     Line.updateCmpLine(half_line)
 
@@ -117,26 +103,12 @@ def visible_vertices(point: Point, obstacles: list[Obstacle], graph: Graph, vert
             temp[0], temp[1] = temp[1], temp[0]
 
         for edge in temp:
-            #print("\ninserting/removing:: ", edge)
-
             if edge.seenCount == True:  # lie on the COUNTERclockwise side
                 edge.seenCount = False
-                try:
-                    BroomT.remove(edge)
-                except ValueError:
-                    print("tried removing ", edge, "  from  \n")
-                    for i in range(len(BroomT)):
-                        print(BroomT[i])
+                BroomT.discard(edge)
             elif edge.seenCount == False and edge != half_line:  # lie on the clockwise side
                 edge.seenCount = True
                 BroomT.add(edge)
-
-            #print("after: ")
-            #for i in range(len(BroomT)):
-             #   print(BroomT[i])
-
-        #print("\n")
-
 
     if visualiser is not None:
         visualiser.graph_connection_scene(point)
@@ -146,7 +118,7 @@ def visible_vertices(point: Point, obstacles: list[Obstacle], graph: Graph, vert
     BroomT.clear()
 
 
-def compute_graph(points: list[Point], obstacles: list[Obstacle], vis_flag = True):
+def compute_graph(points: list[Point], obstacles: list[Obstacle], vis_flag=True):
     graph = Graph()
 
     visualiser = None
@@ -170,13 +142,3 @@ def compute_graph(points: list[Point], obstacles: list[Obstacle], vis_flag = Tru
         scenes = visualiser.get_scenes()
 
     return graph, scenes
-
-
-
-def find_and_remove(T, val):  # TODO: Remove and implement a binary tree
-    index = bisect.bisect_left(T,val)
-
-    for i in range(index, len(T)):
-        if val == T[i]:
-            del T[i]
-            return True
